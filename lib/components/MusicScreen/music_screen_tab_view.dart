@@ -616,7 +616,8 @@ String _includeItemTypes(TabContentType tabContentType) {
     case TabContentType.playlists:
       return "Playlist";
     case TabContentType.discover:
-      return ""; // Empty for now as discover tab should be empty
+      return "Discover"; // Empty for now as discover tab should be empty
+
     default:
       throw const FormatException("Unsupported TabContentType");
   }

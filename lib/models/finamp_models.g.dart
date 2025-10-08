@@ -114,6 +114,8 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       hasCompletedBlurhashImageMigrationIdFix:
           fields[24] == null ? false : fields[24] as bool,
       swipeInsertQueueNext: fields[26] == null ? false : fields[26] as bool,
+      hasCompletedDiscoverTabMigration:
+          fields[27] == null ? false : fields[27] as bool,
     )
       ..disableGesture = fields[19] == null ? false : fields[19] as bool
       ..showFastScroller = fields[25] == null ? true : fields[25] as bool;
@@ -122,7 +124,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(27)
+      ..writeByte(28)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -176,7 +178,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(25)
       ..write(obj.showFastScroller)
       ..writeByte(26)
-      ..write(obj.swipeInsertQueueNext);
+      ..write(obj.swipeInsertQueueNext)
+      ..writeByte(27)
+      ..write(obj.hasCompletedDiscoverTabMigration);
   }
 
   @override

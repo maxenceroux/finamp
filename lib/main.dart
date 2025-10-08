@@ -116,6 +116,23 @@ Future<void> _setupDownloadsHelper() async {
     await downloadsHelper.fixBlurhashMigrationIds();
     FinampSettingsHelper.setHasCompletedBlurhashImageMigrationIdFix(true);
   }
+
+  // Add discover tab to existing users' settings if not already done
+  if (!FinampSettingsHelper.finampSettings.hasCompletedDiscoverTabMigration) {
+    final currentSettings = FinampSettingsHelper.finampSettings;
+    
+    // Add discover tab to showTabs if it's not present
+    if (!currentSettings.showTabs.containsKey(TabContentType.discover)) {
+      currentSettings.showTabs[TabContentType.discover] = true;
+    }
+    
+    // Add discover tab to tabOrder if it's not present
+    if (!currentSettings.tabOrder.contains(TabContentType.discover)) {
+      currentSettings.tabOrder.add(TabContentType.discover);
+    }
+    
+    FinampSettingsHelper.setHasCompletedDiscoverTabMigration(true);
+  }
 }
 
 Future<void> _setupDownloader() async {

@@ -91,6 +91,7 @@ class FinampSettings {
     this.hasCompletedBlurhashImageMigration = true,
     this.hasCompletedBlurhashImageMigrationIdFix = true,
     this.swipeInsertQueueNext = _swipeInsertQueueNext,
+    this.hasCompletedDiscoverTabMigration = false,
   });
 
   @HiveField(0)
@@ -188,6 +189,9 @@ class FinampSettings {
 
   @HiveField(26, defaultValue: _swipeInsertQueueNext)
   bool swipeInsertQueueNext;
+
+  @HiveField(27, defaultValue: false)
+  bool hasCompletedDiscoverTabMigration;
 
   static Future<FinampSettings> create() async {
     final internalSongDir = await getInternalSongDir();

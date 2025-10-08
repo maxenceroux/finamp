@@ -215,6 +215,15 @@ class FinampSettingsHelper {
         .put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setHasCompletedDiscoverTabMigration(
+      bool hasCompletedDiscoverTabMigration) {
+    FinampSettings finampSettingsTemp = finampSettings;
+    finampSettingsTemp.hasCompletedDiscoverTabMigration =
+        hasCompletedDiscoverTabMigration;
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setTabOrder(int index, TabContentType tabContentType) {
     FinampSettings finampSettingsTemp = finampSettings;
     finampSettingsTemp.tabOrder[index] = tabContentType;

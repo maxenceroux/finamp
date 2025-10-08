@@ -27,9 +27,17 @@ def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
-
 android {
+    namespace "com.unicornsonlsd.finamp"
     compileSdkVersion 34
+
+    defaultConfig {
+        applicationId "com.unicornsonlsd.finamp"
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion 34
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -39,13 +47,6 @@ android {
         disable 'InvalidPackage'
     }
 
-    defaultConfig {
-        applicationId "com.unicornsonlsd.finamp"
-        minSdkVersion 21
-        targetSdkVersion 34
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
-    }
     signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -54,16 +55,25 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
+
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            // shrinkResources false
-            // minifyEnabled false
         }
         debug {
             applicationIdSuffix '.debug'
-            minifyEnabled true // avoid dexing issues
+            minifyEnabled true
         }
+    }
+
+    // ✅ Add this block to align Kotlin + Java targets
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
     }
 }
 

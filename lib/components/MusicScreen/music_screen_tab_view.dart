@@ -78,6 +78,12 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
   // This function just lets us easily set stuff to the getItems call we want.
   Future<void> _getPage(int pageKey) async {
     try {
+      // Handle discover tab by returning empty results
+      if (widget.tabContentType == TabContentType.discover) {
+        _pagingController.appendLastPage([]);
+        return;
+      }
+
       final sortOrder =
           widget.sortOrder?.toString() ?? SortOrder.ascending.toString();
       final newItems = await _jellyfinApiHelper.getItems(
@@ -270,6 +276,23 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
                     ),
                     const Padding(padding: EdgeInsets.all(8.0)),
                     const Text("Offline artists view hasn't been implemented")
+                  ],
+                ),
+              );
+            }
+
+            if (widget.tabContentType == TabContentType.discover) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.explore,
+                      size: 64,
+                      color: Colors.white.withOpacity(0.5),
+                    ),
+                    const Padding(padding: EdgeInsets.all(8.0)),
+                    const Text("Discover content coming soon")
                   ],
                 ),
               );
@@ -592,6 +615,8 @@ String _includeItemTypes(TabContentType tabContentType) {
       return "MusicGenre";
     case TabContentType.playlists:
       return "Playlist";
+    case TabContentType.discover:
+      return ""; // Empty for now as discover tab should be empty
     default:
       throw const FormatException("Unsupported TabContentType");
   }

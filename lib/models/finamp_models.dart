@@ -91,6 +91,7 @@ class FinampSettings {
     this.hasCompletedBlurhashImageMigration = true,
     this.hasCompletedBlurhashImageMigrationIdFix = true,
     this.swipeInsertQueueNext = _swipeInsertQueueNext,
+    this.hasCompletedDiscoverTabMigration = false,
   });
 
   @HiveField(0)
@@ -188,6 +189,9 @@ class FinampSettings {
 
   @HiveField(26, defaultValue: _swipeInsertQueueNext)
   bool swipeInsertQueueNext;
+
+  @HiveField(27, defaultValue: false)
+  bool hasCompletedDiscoverTabMigration;
 
   static Future<FinampSettings> create() async {
     final internalSongDir = await getInternalSongDir();
@@ -315,7 +319,9 @@ enum TabContentType {
   @HiveField(3)
   genres,
   @HiveField(4)
-  songs;
+  songs,
+  @HiveField(5)
+  discover;
 
   /// Human-readable version of the [TabContentType]. For example, toString() on
   /// [TabContentType.songs], toString() would return "TabContentType.songs".
@@ -339,6 +345,8 @@ enum TabContentType {
         return "Genres";
       case TabContentType.playlists:
         return "Playlists";
+      case TabContentType.discover:
+        return "Discover";
     }
   }
 
@@ -355,6 +363,8 @@ enum TabContentType {
         return AppLocalizations.of(context)!.genres;
       case TabContentType.playlists:
         return AppLocalizations.of(context)!.playlists;
+      case TabContentType.discover:
+        return AppLocalizations.of(context)!.discover;
     }
   }
 }

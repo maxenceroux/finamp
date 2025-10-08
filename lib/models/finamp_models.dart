@@ -315,7 +315,9 @@ enum TabContentType {
   @HiveField(3)
   genres,
   @HiveField(4)
-  songs;
+  songs,
+  @HiveField(5)
+  discover;
 
   /// Human-readable version of the [TabContentType]. For example, toString() on
   /// [TabContentType.songs], toString() would return "TabContentType.songs".
@@ -339,6 +341,8 @@ enum TabContentType {
         return "Genres";
       case TabContentType.playlists:
         return "Playlists";
+      case TabContentType.discover:
+        return "Discover";
     }
   }
 
@@ -355,6 +359,8 @@ enum TabContentType {
         return AppLocalizations.of(context)!.genres;
       case TabContentType.playlists:
         return AppLocalizations.of(context)!.playlists;
+      case TabContentType.discover:
+        return AppLocalizations.of(context)!.discover;
     }
   }
 }

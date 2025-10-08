@@ -230,6 +230,8 @@ class FinampSettingsHelper {
         (e) => MapEntry(e, true),
       ),
     );
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setSwipeInsertQueueNext(bool swipeInsertQueueNext) {

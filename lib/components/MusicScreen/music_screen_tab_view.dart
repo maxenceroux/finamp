@@ -253,6 +253,49 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
     }
   }
 
+  void _handleSpotifyAlbumTap(BuildContext context, BaseItemDto item) {
+    // Show a dialog or open the Spotify URL since we can't navigate to AlbumScreen for Spotify albums
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(item.name ?? "Album"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (item.albumArtist != null)
+                Text("Artist: ${item.albumArtist!}"),
+              if (item.productionYear != null)
+                Text("Year: ${item.productionYear!}"),
+              if (item.childCount != null)
+                Text("Tracks: ${item.childCount!}"),
+              const SizedBox(height: 16),
+              const Text("This is a Spotify album. Full track playback is not available in this app."),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Close"),
+            ),
+            if (item.externalUrls?["spotify"] != null)
+              TextButton(
+                onPressed: () {
+                  // TODO: Open Spotify URL
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Opening in Spotify...")),
+                  );
+                },
+                child: const Text("Open in Spotify"),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _pagingController.dispose();
@@ -584,6 +627,10 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
                                 return AlbumItem(
                                   album: item,
                                   parentType: _getParentType(),
+                                  onTap: widget.tabContentType == TabContentType.discover && 
+                                         item.id?.startsWith("spotify:") == true
+                                      ? () => _handleSpotifyAlbumTap(context, item)
+                                      : null,
                                 );
                               }
                             },
@@ -621,6 +668,10 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
                                   parentType: _getParentType(),
                                   isGrid: true,
                                   gridAddSettingsListener: false,
+                                  onTap: widget.tabContentType == TabContentType.discover && 
+                                         item.id?.startsWith("spotify:") == true
+                                      ? () => _handleSpotifyAlbumTap(context, item)
+                                      : null,
                                 );
                               }
                             },

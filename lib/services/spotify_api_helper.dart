@@ -42,9 +42,13 @@ class SpotifyApiHelper {
     String? imageUrl;
     if (spotifyAlbum.images.isNotEmpty) {
       // Try to find an image around 300x300, or use the first one
-      final mediumImage = spotifyAlbum.images.where((img) => 
-        img.height != null && img.height! >= 200 && img.height! <= 400
-      ).firstOrNull;
+      SpotifyImage? mediumImage;
+      for (final img in spotifyAlbum.images) {
+        if (img.height != null && img.height! >= 200 && img.height! <= 400) {
+          mediumImage = img;
+          break;
+        }
+      }
       
       imageUrl = mediumImage?.url ?? spotifyAlbum.images.first.url;
     }

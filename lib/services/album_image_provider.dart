@@ -19,6 +19,16 @@ class AlbumImageProvider {
     BuildContext? context,
   }) async {
     assert(itemsToPrecache == null ? true : context != null);
+    
+    // Handle Spotify albums specially
+    if (item.id?.startsWith("spotify:") == true) {
+      final spotifyImageUrl = item.imageTags?["Primary"];
+      if (spotifyImageUrl != null) {
+        return NetworkImage(spotifyImageUrl);
+      }
+      return null;
+    }
+    
     if (item.imageId == null) {
       return null;
     }

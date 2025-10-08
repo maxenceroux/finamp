@@ -13,6 +13,7 @@ import '../../services/downloads_helper.dart';
 import '../../services/finamp_settings_helper.dart';
 import '../../services/finamp_user_helper.dart';
 import '../../services/jellyfin_api_helper.dart';
+import '../../services/spotify_api_helper.dart';
 import '../AlbumScreen/song_list_tile.dart';
 import '../error_snackbar.dart';
 import '../first_page_progress_indicator.dart';
@@ -64,6 +65,7 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
 
   final _jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final _finampUserHelper = GetIt.instance<FinampUserHelper>();
+  final _spotifyApiHelper = SpotifyApiHelper();
 
   String? _lastSearch;
   bool? _oldIsFavourite;
@@ -78,9 +80,29 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
   // This function just lets us easily set stuff to the getItems call we want.
   Future<void> _getPage(int pageKey) async {
     try {
-      // Handle discover tab by returning empty results
+      // Handle discover tab with Spotify search
       if (widget.tabContentType == TabContentType.discover) {
-        _pagingController.appendLastPage([]);
+        if (widget.searchTerm?.trim().isNotEmpty == true) {
+          // Search Spotify for albums
+          final spotifyResults = await _spotifyApiHelper.searchAlbums(
+            query: widget.searchTerm!.trim(),
+            limit: _pageSize,
+            offset: pageKey,
+          );
+          
+          if (spotifyResults != null) {
+            if (spotifyResults.length < _pageSize) {
+              _pagingController.appendLastPage(spotifyResults);
+            } else {
+              _pagingController.appendPage(spotifyResults, pageKey + spotifyResults.length);
+            }
+          } else {
+            _pagingController.appendLastPage([]);
+          }
+        } else {
+          // Show empty state when no search term
+          _pagingController.appendLastPage([]);
+        }
         return;
       }
 
@@ -287,12 +309,12 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.explore,
+                      Icons.cloud_off,
                       size: 64,
                       color: Colors.white.withOpacity(0.5),
                     ),
                     const Padding(padding: EdgeInsets.all(8.0)),
-                    const Text("Discover content coming soon")
+                    const Text("Spotify search requires internet connection")
                   ],
                 ),
               );
@@ -498,6 +520,37 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
             _oldSortOrder = widget.sortOrder;
             _oldView = widget.view;
             _pagingController.refresh();
+          }
+
+          // Special handling for discover tab when no search term is provided
+          if (widget.tabContentType == TabContentType.discover && 
+              (widget.searchTerm?.trim().isEmpty == true || widget.searchTerm == null)) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.search,
+                    size: 64,
+                    color: Colors.white.withOpacity(0.5),
+                  ),
+                  const Padding(padding: EdgeInsets.all(16.0)),
+                  Text(
+                    "Search for albums on Spotify",
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: Colors.white.withOpacity(0.7),
+                    ),
+                  ),
+                  const Padding(padding: EdgeInsets.all(8.0)),
+                  Text(
+                    "Use the search button to find albums",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white.withOpacity(0.5),
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
 
           return RefreshIndicator(

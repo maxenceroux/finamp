@@ -1,15 +1,27 @@
 class SpotifyTokenResponse {
   final String access_token;
+  final String token_type;
+  final int expires_in;
 
-  SpotifyTokenResponse({required this.access_token});
+  SpotifyTokenResponse({
+    required this.access_token,
+    required this.token_type,
+    required this.expires_in,
+  });
 
   factory SpotifyTokenResponse.fromJson(Map<String, dynamic> json) {
-    return SpotifyTokenResponse(access_token: json['access_token'] as String);
+    return SpotifyTokenResponse(
+      access_token: json['access_token'] as String,
+      token_type: json['token_type'] as String,
+      expires_in: json['expires_in'] as int,
+    );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'access_token': access_token,
+      'token_type': token_type,
+      'expires_in': expires_in,
     };
   }
 }
@@ -241,6 +253,128 @@ class SpotifyExternalUrls {
   Map<String, dynamic> toJson() {
     return {
       'spotify': spotify,
+    };
+  }
+}
+
+class SpotifyAlbumTracksResponse {
+  final String href;
+  final int limit;
+  final String? next;
+  final int offset;
+  final String? previous;
+  final int total;
+  final List<SpotifyTrack> items;
+
+  SpotifyAlbumTracksResponse({
+    required this.href,
+    required this.limit,
+    this.next,
+    required this.offset,
+    this.previous,
+    required this.total,
+    required this.items,
+  });
+
+  factory SpotifyAlbumTracksResponse.fromJson(Map<String, dynamic> json) {
+    return SpotifyAlbumTracksResponse(
+      href: json['href'] as String,
+      limit: json['limit'] as int,
+      next: json['next'] as String?,
+      offset: json['offset'] as int,
+      previous: json['previous'] as String?,
+      total: json['total'] as int,
+      items: (json['items'] as List<dynamic>)
+          .map((e) => SpotifyTrack.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'href': href,
+      'limit': limit,
+      'next': next,
+      'offset': offset,
+      'previous': previous,
+      'total': total,
+      'items': items.map((e) => e.toJson()).toList(),
+    };
+  }
+}
+
+class SpotifyTrack {
+  final List<SpotifyArtist> artists;
+  final List<String> available_markets;
+  final int disc_number;
+  final int duration_ms;
+  final bool explicit;
+  final SpotifyExternalUrls external_urls;
+  final String href;
+  final String id;
+  final bool is_local;
+  final String name;
+  final String preview_url;
+  final int track_number;
+  final String type;
+  final String uri;
+
+  SpotifyTrack({
+    required this.artists,
+    required this.available_markets,
+    required this.disc_number,
+    required this.duration_ms,
+    required this.explicit,
+    required this.external_urls,
+    required this.href,
+    required this.id,
+    required this.is_local,
+    required this.name,
+    required this.preview_url,
+    required this.track_number,
+    required this.type,
+    required this.uri,
+  });
+
+  factory SpotifyTrack.fromJson(Map<String, dynamic> json) {
+    return SpotifyTrack(
+      artists: (json['artists'] as List<dynamic>)
+          .map((e) => SpotifyArtist.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      available_markets: (json['available_markets'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      disc_number: json['disc_number'] as int,
+      duration_ms: json['duration_ms'] as int,
+      explicit: json['explicit'] as bool,
+      external_urls: SpotifyExternalUrls.fromJson(json['external_urls'] as Map<String, dynamic>),
+      href: json['href'] as String,
+      id: json['id'] as String,
+      is_local: json['is_local'] as bool,
+      name: json['name'] as String,
+      preview_url: json['preview_url'] as String? ?? '',
+      track_number: json['track_number'] as int,
+      type: json['type'] as String,
+      uri: json['uri'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'artists': artists.map((e) => e.toJson()).toList(),
+      'available_markets': available_markets,
+      'disc_number': disc_number,
+      'duration_ms': duration_ms,
+      'explicit': explicit,
+      'external_urls': external_urls.toJson(),
+      'href': href,
+      'id': id,
+      'is_local': is_local,
+      'name': name,
+      'preview_url': preview_url,
+      'track_number': track_number,
+      'type': type,
+      'uri': uri,
     };
   }
 }

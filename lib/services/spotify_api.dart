@@ -50,6 +50,38 @@ class SpotifyApi {
     }
   }
 
+  Future<SpotifyAlbumTracksResponse?> getAlbumTracks(
+    String albumId,
+    int limit,
+    int offset,
+  ) async {
+    try {
+      final token = await _getSpotifyToken();
+      
+      final response = await _client.get(
+        "/v1/albums/$albumId/tracks",
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        parameters: {
+          "limit": limit.toString(),
+          "offset": offset.toString(),
+        },
+      );
+
+      if (response.isSuccessful && response.body != null) {
+        return SpotifyAlbumTracksResponse.fromJson(response.body);
+      } else {
+        _logger.warning("Failed to get album tracks: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      _logger.severe("Error getting album tracks: $e");
+      return null;
+    }
+  }
+
   Future<String> _getSpotifyToken() async {
     try {
       final tokenClient = ChopperClient(

@@ -39,6 +39,7 @@ import 'screens/music_screen.dart';
 import 'screens/player_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/splash_screen.dart';
+import 'screens/spotify_album_screen.dart';
 import 'screens/tabs_settings_screen.dart';
 import 'screens/transcoding_settings_screen.dart';
 import 'screens/user_selector.dart';
@@ -328,6 +329,7 @@ class Finamp extends StatelessWidget {
                       ViewSelector.routeName: (context) => const ViewSelector(),
                       MusicScreen.routeName: (context) => const MusicScreen(),
                       AlbumScreen.routeName: (context) => const AlbumScreen(),
+                      SpotifyAlbumScreen.routeName: (context) => const SpotifyAlbumScreen(),
                       ArtistScreen.routeName: (context) => const ArtistScreen(),
                       AddToPlaylistScreen.routeName: (context) =>
                           const AddToPlaylistScreen(),

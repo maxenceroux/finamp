@@ -52,14 +52,11 @@ class _SpotifyAlbumScreenContentState extends State<SpotifyAlbumScreenContent> {
               (BuildContext context, int index) {
                 return SongListTile(
                   item: widget.children[index],
+                  children: widget.children,
+                  index: index,
+                  parentId: widget.parent.id ?? '',
                   isInPlaylist: false,
-                  actualParent: widget.parent,
-                  isInAlbum: true,
-                  // Disable most actions for Spotify tracks
-                  onTap: () {
-                    // Show info dialog or open preview in Spotify
-                    _showTrackInfo(context, widget.children[index]);
-                  },
+                  showArtists: true,
                 );
               },
               childCount: widget.children.length,

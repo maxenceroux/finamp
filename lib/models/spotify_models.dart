@@ -1,27 +1,19 @@
 class SpotifyTokenResponse {
   final String access_token;
-  final String token_type;
-  final int expires_in;
 
   SpotifyTokenResponse({
     required this.access_token,
-    required this.token_type,
-    required this.expires_in,
   });
 
   factory SpotifyTokenResponse.fromJson(Map<String, dynamic> json) {
     return SpotifyTokenResponse(
       access_token: json['access_token'] as String,
-      token_type: json['token_type'] as String,
-      expires_in: json['expires_in'] as int,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'access_token': access_token,
-      'token_type': token_type,
-      'expires_in': expires_in,
     };
   }
 }
@@ -347,7 +339,8 @@ class SpotifyTrack {
       disc_number: json['disc_number'] as int,
       duration_ms: json['duration_ms'] as int,
       explicit: json['explicit'] as bool,
-      external_urls: SpotifyExternalUrls.fromJson(json['external_urls'] as Map<String, dynamic>),
+      external_urls: SpotifyExternalUrls.fromJson(
+          json['external_urls'] as Map<String, dynamic>),
       href: json['href'] as String,
       id: json['id'] as String,
       is_local: json['is_local'] as bool,

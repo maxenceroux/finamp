@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
-import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 import '../../models/jellyfin_models.dart';
 import '../favourite_button.dart';
@@ -26,21 +25,6 @@ class SpotifyAlbumScreenContent extends StatefulWidget {
 class _SpotifyAlbumScreenContentState extends State<SpotifyAlbumScreenContent> {
   @override
   Widget build(BuildContext context) {
-    List<List<BaseItemDto>> childrenPerDisc = [];
-    // try splitting up tracks by disc numbers
-    // if first track has a disc number, let's assume the rest has it too
-    if (widget.children.isNotEmpty && widget.children[0].parentIndexNumber != null) {
-      int? lastDiscNumber;
-      for (var child in widget.children) {
-        if (child.parentIndexNumber != null &&
-            child.parentIndexNumber != lastDiscNumber) {
-          lastDiscNumber = child.parentIndexNumber;
-          childrenPerDisc.add([]);
-        }
-        childrenPerDisc.last.add(child);
-      }
-    }
-
     return Scrollbar(
       child: CustomScrollView(
         slivers: [
@@ -62,61 +46,25 @@ class _SpotifyAlbumScreenContentState extends State<SpotifyAlbumScreenContent> {
               // Could add "Open in Spotify" button here if needed
             ],
           ),
-          if (widget.children.length > 1 &&
-              childrenPerDisc.length >
-                  1) // show headers only for multi disc albums
-            for (var childrenOfThisDisc in childrenPerDisc)
-              SliverStickyHeader(
-                header: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 16.0,
-                  ),
-                  color: Theme.of(context).colorScheme.surfaceVariant,
-                  child: Text(
-                    AppLocalizations.of(context)!.disc(
-                        childrenOfThisDisc.first.parentIndexNumber ?? 1),
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return SongListTile(
-                        item: childrenOfThisDisc[index],
-                        isInPlaylist: false,
-                        actualParent: widget.parent,
-                        isInAlbum: true,
-                        // Disable most actions for Spotify tracks
-                        onTap: () {
-                          // Show info dialog or open preview in Spotify
-                          _showTrackInfo(context, childrenOfThisDisc[index]);
-                        },
-                      );
-                    },
-                    childCount: childrenOfThisDisc.length,
-                  ),
-                ),
-              )
-          else
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  return SongListTile(
-                    item: widget.children[index],
-                    isInPlaylist: false,
-                    actualParent: widget.parent,
-                    isInAlbum: true,
-                    // Disable most actions for Spotify tracks
-                    onTap: () {
-                      // Show info dialog or open preview in Spotify
-                      _showTrackInfo(context, widget.children[index]);
-                    },
-                  );
-                },
-                childCount: widget.children.length,
-              ),
+          // Simple track list without disc logic for Spotify albums
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return SongListTile(
+                  item: widget.children[index],
+                  isInPlaylist: false,
+                  actualParent: widget.parent,
+                  isInAlbum: true,
+                  // Disable most actions for Spotify tracks
+                  onTap: () {
+                    // Show info dialog or open preview in Spotify
+                    _showTrackInfo(context, widget.children[index]);
+                  },
+                );
+              },
+              childCount: widget.children.length,
             ),
+          ),
         ],
       ),
     );
@@ -136,8 +84,6 @@ class _SpotifyAlbumScreenContentState extends State<SpotifyAlbumScreenContent> {
                 Text("Artist: ${track.artists!.join(', ')}"),
               if (track.runTimeTicks != null)
                 Text("Duration: ${_formatDuration(track.runTimeTicks! ~/ 10000)}"),
-              if (track.indexNumber != null)
-                Text("Track: ${track.indexNumber!}"),
               const SizedBox(height: 16),
               const Text("This is a Spotify track. Full playback is not available in this app."),
             ],

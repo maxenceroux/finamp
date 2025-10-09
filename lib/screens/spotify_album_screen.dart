@@ -57,6 +57,23 @@ class _SpotifyAlbumScreenState extends State<SpotifyAlbumScreen> {
             );
           }
 
+          if (parent.id == null || parent.id!.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error,
+                    size: 64,
+                    color: Colors.red.withOpacity(0.5),
+                  ),
+                  const Padding(padding: EdgeInsets.all(8.0)),
+                  const Text("Invalid album ID")
+                ],
+              ),
+            );
+          }
+
           albumTracksContentFuture ??= spotifyApiHelper.getAlbumTracks(
             albumId: parent.id!,
           );

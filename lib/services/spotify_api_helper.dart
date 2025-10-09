@@ -116,6 +116,13 @@ class SpotifyApiHelper {
           _parseReleaseDate(spotifyAlbum.release_date)?.toIso8601String(),
       childCount: spotifyAlbum.total_tracks,
       serverId: "spotify", // Use spotify as server ID to indicate source
+      // Add userData to prevent null assertion errors
+      userData: UserItemDataDto(
+        playbackPositionTicks: 0,
+        playCount: 0,
+        isFavorite: false,
+        played: false,
+      ),
       // Custom fields to store Spotify-specific data
       externalUrls: [
         ExternalUrl(
@@ -153,6 +160,13 @@ class SpotifyApiHelper {
       artists: artists,
       runTimeTicks: runTimeTicks,
       serverId: "spotify", // Use spotify as server ID to indicate source
+      // Add userData to prevent null assertion errors
+      userData: UserItemDataDto(
+        playbackPositionTicks: 0,
+        playCount: 0,
+        isFavorite: false,
+        played: false,
+      ),
       // Custom fields to store Spotify-specific data
       externalUrls: [
         ExternalUrl(

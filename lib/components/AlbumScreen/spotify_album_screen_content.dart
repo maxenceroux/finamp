@@ -4,7 +4,7 @@ import 'package:finamp/l10n/app_localizations.dart';
 import '../../models/jellyfin_models.dart';
 import '../favourite_button.dart';
 import 'spotify_album_screen_content_flexible_space_bar.dart';
-import 'song_list_tile.dart';
+import 'spotify_track_list_tile.dart';
 
 typedef BaseItemDtoCallback = void Function(BaseItemDto item);
 
@@ -50,13 +50,11 @@ class _SpotifyAlbumScreenContentState extends State<SpotifyAlbumScreenContent> {
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                return SongListTile(
+                return SpotifyTrackListTile(
                   item: widget.children[index],
-                  children: widget.children,
-                  index: index,
-                  parentId: widget.parent.id ?? '',
-                  isInPlaylist: false,
-                  showArtists: true,
+                  onTap: () {
+                    _showTrackInfo(context, widget.children[index]);
+                  },
                 );
               },
               childCount: widget.children.length,

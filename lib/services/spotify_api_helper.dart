@@ -23,9 +23,11 @@ class SpotifyApiHelper {
 
       if (searchResult != null) {
         final spotifyAlbums = searchResult.albums.items;
-        
+
         // Convert Spotify albums to BaseItemDto for compatibility with existing UI
-        return spotifyAlbums.map((spotifyAlbum) => _convertSpotifyAlbumToBaseItem(spotifyAlbum)).toList();
+        return spotifyAlbums
+            .map((spotifyAlbum) => _convertSpotifyAlbumToBaseItem(spotifyAlbum))
+            .toList();
       } else {
         _logger.warning("Failed to search Spotify albums");
         return [];
@@ -49,20 +51,22 @@ class SpotifyApiHelper {
           break;
         }
       }
-      
+
       imageUrl = mediumImage?.url ?? spotifyAlbum.images.first.url;
     }
 
     // Get primary artist name
-    final artistName = spotifyAlbum.artists.isNotEmpty 
-      ? spotifyAlbum.artists.first.name 
-      : "Unknown Artist";
+    final artistName = spotifyAlbum.artists.isNotEmpty
+        ? spotifyAlbum.artists.first.name
+        : "Unknown Artist";
 
     // Create artist list for albumArtists field
-    final albumArtists = spotifyAlbum.artists.map((artist) => NameIdPair(
-      name: artist.name,
-      id: artist.id,
-    )).toList();
+    final albumArtists = spotifyAlbum.artists
+        .map((artist) => NameIdPair(
+              name: artist.name,
+              id: artist.id,
+            ))
+        .toList();
 
     return BaseItemDto(
       name: spotifyAlbum.name,
@@ -71,13 +75,17 @@ class SpotifyApiHelper {
       albumArtist: artistName,
       albumArtists: albumArtists,
       productionYear: _parseReleaseYear(spotifyAlbum.release_date),
-      premiereDate: _parseReleaseDate(spotifyAlbum.release_date),
+      premiereDate:
+          _parseReleaseDate(spotifyAlbum.release_date)?.toIso8601String(),
       childCount: spotifyAlbum.total_tracks,
       serverId: "spotify", // Use spotify as server ID to indicate source
       // Custom fields to store Spotify-specific data
-      externalUrls: {
-        "spotify": spotifyAlbum.external_urls.spotify,
-      },
+      externalUrls: [
+        ExternalUrl(
+          name: "spotify",
+          url: spotifyAlbum.external_urls.spotify,
+        ),
+      ],
       // Use the image URL as the primary image
       imageTags: imageUrl != null ? {"Primary": imageUrl} : null,
     );

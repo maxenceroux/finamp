@@ -86,15 +86,16 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
           // Search Spotify for albums
           final spotifyResults = await _spotifyApiHelper.searchAlbums(
             query: widget.searchTerm!.trim(),
-            limit: _pageSize,
+            limit: 50,
             offset: pageKey,
           );
-          
+
           if (spotifyResults != null) {
             if (spotifyResults.length < _pageSize) {
               _pagingController.appendLastPage(spotifyResults);
             } else {
-              _pagingController.appendPage(spotifyResults, pageKey + spotifyResults.length);
+              _pagingController.appendPage(
+                  spotifyResults, pageKey + spotifyResults.length);
             }
           } else {
             _pagingController.appendLastPage([]);
@@ -268,10 +269,10 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
                 Text("Artist: ${item.albumArtist!}"),
               if (item.productionYear != null)
                 Text("Year: ${item.productionYear!}"),
-              if (item.childCount != null)
-                Text("Tracks: ${item.childCount!}"),
+              if (item.childCount != null) Text("Tracks: ${item.childCount!}"),
               const SizedBox(height: 16),
-              const Text("This is a Spotify album. Full track playback is not available in this app."),
+              const Text(
+                  "This is a Spotify album. Full track playback is not available in this app."),
             ],
           ),
           actions: [
@@ -279,7 +280,7 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
               onPressed: () => Navigator.of(context).pop(),
               child: const Text("Close"),
             ),
-            if (item.externalUrls?["spotify"] != null)
+            if (item.externalUrls?.contains("spotify") == true)
               TextButton(
                 onPressed: () {
                   // TODO: Open Spotify URL
@@ -566,8 +567,9 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
           }
 
           // Special handling for discover tab when no search term is provided
-          if (widget.tabContentType == TabContentType.discover && 
-              (widget.searchTerm?.trim().isEmpty == true || widget.searchTerm == null)) {
+          if (widget.tabContentType == TabContentType.discover &&
+              (widget.searchTerm?.trim().isEmpty == true ||
+                  widget.searchTerm == null)) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -581,15 +583,15 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
                   Text(
                     "Search for albums on Spotify",
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white.withOpacity(0.7),
-                    ),
+                          color: Colors.white.withOpacity(0.7),
+                        ),
                   ),
                   const Padding(padding: EdgeInsets.all(8.0)),
                   Text(
                     "Use the search button to find albums",
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withOpacity(0.5),
-                    ),
+                          color: Colors.white.withOpacity(0.5),
+                        ),
                   ),
                 ],
               ),
@@ -627,9 +629,12 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
                                 return AlbumItem(
                                   album: item,
                                   parentType: _getParentType(),
-                                  onTap: widget.tabContentType == TabContentType.discover && 
-                                         item.id?.startsWith("spotify:") == true
-                                      ? () => _handleSpotifyAlbumTap(context, item)
+                                  onTap: widget.tabContentType ==
+                                              TabContentType.discover &&
+                                          item.id?.startsWith("spotify:") ==
+                                              true
+                                      ? () =>
+                                          _handleSpotifyAlbumTap(context, item)
                                       : null,
                                 );
                               }
@@ -668,9 +673,12 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
                                   parentType: _getParentType(),
                                   isGrid: true,
                                   gridAddSettingsListener: false,
-                                  onTap: widget.tabContentType == TabContentType.discover && 
-                                         item.id?.startsWith("spotify:") == true
-                                      ? () => _handleSpotifyAlbumTap(context, item)
+                                  onTap: widget.tabContentType ==
+                                              TabContentType.discover &&
+                                          item.id?.startsWith("spotify:") ==
+                                              true
+                                      ? () =>
+                                          _handleSpotifyAlbumTap(context, item)
                                       : null,
                                 );
                               }
@@ -720,7 +728,7 @@ String _includeItemTypes(TabContentType tabContentType) {
     case TabContentType.playlists:
       return "Playlist";
     case TabContentType.discover:
-      return ""; // Empty for now as discover tab should be empty
+      return "Discover";
     default:
       throw const FormatException("Unsupported TabContentType");
   }

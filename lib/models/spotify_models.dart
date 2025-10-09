@@ -1,27 +1,15 @@
 class SpotifyTokenResponse {
   final String access_token;
-  final String token_type;
-  final int expires_in;
 
-  SpotifyTokenResponse({
-    required this.access_token,
-    required this.token_type,
-    required this.expires_in,
-  });
+  SpotifyTokenResponse({required this.access_token});
 
   factory SpotifyTokenResponse.fromJson(Map<String, dynamic> json) {
-    return SpotifyTokenResponse(
-      access_token: json['access_token'] as String,
-      token_type: json['token_type'] as String,
-      expires_in: json['expires_in'] as int,
-    );
+    return SpotifyTokenResponse(access_token: json['access_token'] as String);
   }
 
   Map<String, dynamic> toJson() {
     return {
       'access_token': access_token,
-      'token_type': token_type,
-      'expires_in': expires_in,
     };
   }
 }
@@ -35,7 +23,8 @@ class SpotifySearchResponse {
 
   factory SpotifySearchResponse.fromJson(Map<String, dynamic> json) {
     return SpotifySearchResponse(
-      albums: SpotifyAlbumsSearchResult.fromJson(json['albums'] as Map<String, dynamic>),
+      albums: SpotifyAlbumsSearchResult.fromJson(
+          json['albums'] as Map<String, dynamic>),
     );
   }
 
@@ -130,7 +119,8 @@ class SpotifyAlbum {
       available_markets: (json['available_markets'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
-      external_urls: SpotifyExternalUrls.fromJson(json['external_urls'] as Map<String, dynamic>),
+      external_urls: SpotifyExternalUrls.fromJson(
+          json['external_urls'] as Map<String, dynamic>),
       href: json['href'] as String,
       id: json['id'] as String,
       images: (json['images'] as List<dynamic>)
@@ -185,7 +175,8 @@ class SpotifyArtist {
 
   factory SpotifyArtist.fromJson(Map<String, dynamic> json) {
     return SpotifyArtist(
-      external_urls: SpotifyExternalUrls.fromJson(json['external_urls'] as Map<String, dynamic>),
+      external_urls: SpotifyExternalUrls.fromJson(
+          json['external_urls'] as Map<String, dynamic>),
       href: json['href'] as String,
       id: json['id'] as String,
       name: json['name'] as String,

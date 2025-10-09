@@ -8,10 +8,11 @@ class SpotifyApi {
   final _logger = Logger("SpotifyApi");
   final ChopperClient _client;
 
-  SpotifyApi() : _client = ChopperClient(
-    baseUrl: Uri.parse("https://api.spotify.com"),
-    converter: JsonConverter(),
-  );
+  SpotifyApi()
+      : _client = ChopperClient(
+          baseUrl: Uri.parse("https://api.spotify.com"),
+          converter: JsonConverter(),
+        );
 
   Future<SpotifySearchResponse?> searchAlbums(
     String query,
@@ -21,9 +22,9 @@ class SpotifyApi {
   ) async {
     try {
       final token = await _getSpotifyToken();
-      
+
       final response = await _client.get(
-        "/v1/search",
+        Uri.parse("/v1/search"),
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json",
@@ -39,7 +40,8 @@ class SpotifyApi {
       if (response.isSuccessful && response.body != null) {
         return SpotifySearchResponse.fromJson(response.body);
       } else {
-        _logger.warning("Failed to search Spotify: ${response.statusCode}");
+        _logger.warning(
+            "Failed to search Spotify: ${response.statusCode} - ${response.error ?? response.body}");
         return null;
       }
     } catch (e) {
@@ -55,13 +57,14 @@ class SpotifyApi {
         converter: JsonConverter(),
       );
 
-      final response = await tokenClient.get("/api/spotify-token");
-      
+      final response = await tokenClient.get(Uri.parse("/api/spotify-token"));
+
       if (response.isSuccessful && response.body != null) {
         final tokenResponse = SpotifyTokenResponse.fromJson(response.body);
         return tokenResponse.access_token;
       } else {
-        throw Exception("Failed to fetch Spotify token: ${response.statusCode}");
+        throw Exception(
+            "Failed to fetch Spotify token: ${response.statusCode}");
       }
     } catch (e) {
       _logger.severe("Error fetching Spotify token: $e");

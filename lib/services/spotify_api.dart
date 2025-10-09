@@ -57,9 +57,9 @@ class SpotifyApi {
   ) async {
     try {
       final token = await _getSpotifyToken();
-      
+
       final response = await _client.get(
-        "/v1/albums/$albumId/tracks",
+        Uri.parse("/v1/albums/$albumId/tracks"),
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json",

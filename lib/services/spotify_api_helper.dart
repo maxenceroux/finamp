@@ -46,10 +46,9 @@ class SpotifyApiHelper {
   }) async {
     try {
       // Remove spotify: prefix if present
-      final cleanAlbumId = albumId.startsWith('spotify:') 
-          ? albumId.substring(8) 
-          : albumId;
-      
+      final cleanAlbumId =
+          albumId.startsWith('spotify:') ? albumId.substring(8) : albumId;
+
       final tracksResult = await spotifyApi.getAlbumTracks(
         cleanAlbumId,
         limit,
@@ -58,12 +57,13 @@ class SpotifyApiHelper {
 
       if (tracksResult != null) {
         final spotifyTracks = tracksResult.items;
-        
+
         // Convert Spotify tracks to BaseItemDto for compatibility with existing UI
         return spotifyTracks
             .asMap()
             .entries
-            .map((entry) => _convertSpotifyTrackToBaseItem(entry.value, entry.key + 1, cleanAlbumId))
+            .map((entry) => _convertSpotifyTrackToBaseItem(
+                entry.value, entry.key + 1, cleanAlbumId))
             .toList();
       } else {
         _logger.warning("Failed to get Spotify album tracks");
@@ -129,16 +129,15 @@ class SpotifyApiHelper {
   }
 
   /// Convert a Spotify track to BaseItemDto for compatibility with existing UI
-  BaseItemDto _convertSpotifyTrackToBaseItem(SpotifyTrack spotifyTrack, int trackNumber, String albumId) {
+  BaseItemDto _convertSpotifyTrackToBaseItem(
+      SpotifyTrack spotifyTrack, int trackNumber, String albumId) {
     // Get primary artist name
     final artistName = spotifyTrack.artists.isNotEmpty
         ? spotifyTrack.artists.first.name
         : "Unknown Artist";
 
     // Create artist list for artists field
-    final artists = spotifyTrack.artists
-        .map((artist) => artist.name)
-        .toList();
+    final artists = spotifyTrack.artists.map((artist) => artist.name).toList();
 
     // Convert duration from milliseconds to ticks (1 tick = 100 nanoseconds, 1 ms = 10,000 ticks)
     final runTimeTicks = spotifyTrack.duration_ms * 10000;

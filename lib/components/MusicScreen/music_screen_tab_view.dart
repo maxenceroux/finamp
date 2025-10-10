@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:finamp/components/MusicScreen/artist_item_list_tile.dart';
+import 'package:finamp/components/SlskdScreen/slskd_downloads_tab_view.dart';
+import 'package:finamp/components/SlskdScreen/slskd_searches_tab_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
@@ -272,6 +274,15 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    // Handle slskd tabs
+    if (widget.tabContentType == TabContentType.slskdDownloads) {
+      return const SlskdDownloadsTabView();
+    }
+    
+    if (widget.tabContentType == TabContentType.slskdSearches) {
+      return const SlskdSearchesTabView();
+    }
 
     return ValueListenableBuilder<Box<FinampSettings>>(
       valueListenable: FinampSettingsHelper.finampSettingsListener,

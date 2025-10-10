@@ -131,6 +131,23 @@ Future<void> _setupDownloadsHelper() async {
     if (!currentSettings.tabOrder.contains(TabContentType.discover)) {
       currentSettings.tabOrder.add(TabContentType.discover);
     }
+
+    // Add slskd tabs as well (but disabled by default)
+    if (!currentSettings.showTabs.containsKey(TabContentType.slskdDownloads)) {
+      currentSettings.showTabs[TabContentType.slskdDownloads] = false;
+    }
+    
+    if (!currentSettings.showTabs.containsKey(TabContentType.slskdSearches)) {
+      currentSettings.showTabs[TabContentType.slskdSearches] = false;
+    }
+    
+    if (!currentSettings.tabOrder.contains(TabContentType.slskdDownloads)) {
+      currentSettings.tabOrder.add(TabContentType.slskdDownloads);
+    }
+    
+    if (!currentSettings.tabOrder.contains(TabContentType.slskdSearches)) {
+      currentSettings.tabOrder.add(TabContentType.slskdSearches);
+    }
     
     FinampSettingsHelper.setHasCompletedDiscoverTabMigration(true);
   }

@@ -321,7 +321,11 @@ enum TabContentType {
   @HiveField(4)
   songs,
   @HiveField(5)
-  discover;
+  discover,
+  @HiveField(6)
+  slskdDownloads,
+  @HiveField(7)
+  slskdSearches;
 
   /// Human-readable version of the [TabContentType]. For example, toString() on
   /// [TabContentType.songs], toString() would return "TabContentType.songs".
@@ -347,6 +351,10 @@ enum TabContentType {
         return "Playlists";
       case TabContentType.discover:
         return "Discover";
+      case TabContentType.slskdDownloads:
+        return "Downloads";
+      case TabContentType.slskdSearches:
+        return "Searches";
     }
   }
 
@@ -365,6 +373,10 @@ enum TabContentType {
         return AppLocalizations.of(context)!.playlists;
       case TabContentType.discover:
         return AppLocalizations.of(context)!.discover;
+      case TabContentType.slskdDownloads:
+        return AppLocalizations.of(context)!.slskdDownloads;
+      case TabContentType.slskdSearches:
+        return AppLocalizations.of(context)!.slskdSearches;
     }
   }
 }

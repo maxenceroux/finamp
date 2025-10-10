@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:chopper/chopper.dart';
 import 'package:finamp/services/http_aggregate_logging_interceptor.dart';
 import 'package:logging/logging.dart';
@@ -23,7 +23,7 @@ class SlskdConfig {
   });
 
   static const SlskdConfig defaultConfig = SlskdConfig(
-    baseUrl: 'http://100.98.104.55:5030',
+    baseUrl: 'http://192.168.1.31:5030',
     username: 'slskd',
     password: 'slskd',
   );
@@ -37,9 +37,12 @@ class SlskdAuthResponse {
   SlskdAuthResponse({required this.token, required this.username});
 
   factory SlskdAuthResponse.fromJson(Map<String, dynamic> json) {
+    if (json['token'] == null || json['name'] == null) {
+      throw Exception('Authentication response missing token or name: $json');
+    }
     return SlskdAuthResponse(
       token: json['token'] as String,
-      username: json['username'] as String,
+      username: json['name'] as String,
     );
   }
 }
@@ -80,7 +83,8 @@ class SlskdAuthInterceptor implements RequestInterceptor, ResponseInterceptor {
   FutureOr<Response> onResponse(Response response) async {
     // If we get a 401, clear token and retry once
     if (response.statusCode == 401 && _token != null) {
-      _logger.info('Received 401, clearing token and will retry on next request');
+      _logger
+          .info('Received 401, clearing token and will retry on next request');
       clearToken();
     }
     return response;
@@ -88,7 +92,6 @@ class SlskdAuthInterceptor implements RequestInterceptor, ResponseInterceptor {
 
   Future<void> _authenticate() async {
     if (_isAuthenticating) return;
-    
     _isAuthenticating = true;
     try {
       final authClient = ChopperClient(
@@ -107,13 +110,21 @@ class SlskdAuthInterceptor implements RequestInterceptor, ResponseInterceptor {
       );
 
       final response = await authClient.send(authRequest);
-      
+      _logger.info(
+          'Auth response status: ${response.statusCode}, body: ${response.body}');
+
       if (response.isSuccessful && response.body != null) {
-        final authResponse = SlskdAuthResponse.fromJson(response.body);
-        _token = authResponse.token;
-        _logger.info('Successfully authenticated with slskd');
+        try {
+          final authResponse = SlskdAuthResponse.fromJson(response.body);
+          _token = authResponse.token;
+          _logger.info('Successfully authenticated with slskd');
+        } catch (e) {
+          _logger.severe(
+              'Failed to parse authentication response: $e, body: ${response.body}');
+        }
       } else {
-        _logger.severe('Failed to authenticate with slskd: ${response.statusCode}');
+        _logger.severe(
+            'Failed to authenticate with slskd: ${response.statusCode}, body: ${response.body}');
       }
 
       authClient.dispose();
@@ -144,7 +155,7 @@ abstract class SlskdApi extends ChopperService {
     response: JsonConverter.responseFactory,
   )
   @Get(path: '/api/v0/transfers/downloads')
-  Future<Response<List<Map<String, dynamic>>>> getDownloads({
+  Future<Response<List<dynamic>>> getDownloads({
     @Query('includeRemoved') bool includeRemoved = false,
   });
 
@@ -153,7 +164,7 @@ abstract class SlskdApi extends ChopperService {
     response: JsonConverter.responseFactory,
   )
   @Get(path: '/api/v0/searches')
-  Future<Response<List<Map<String, dynamic>>>> getSearches({
+  Future<Response<List<dynamic>>> getSearches({
     @Query('limit') int? limit,
   });
 
@@ -169,7 +180,7 @@ abstract class SlskdApi extends ChopperService {
   static SlskdApi create({SlskdConfig? config}) {
     final slskdConfig = config ?? SlskdConfig.defaultConfig;
     final authInterceptor = SlskdAuthInterceptor(slskdConfig);
-    
+
     final client = ChopperClient(
       baseUrl: Uri.parse(slskdConfig.baseUrl),
       services: [_$SlskdApi()],
@@ -191,70 +202,83 @@ class SlskdApiHelper {
   final SlskdConfig _config;
   final _logger = Logger('SlskdApiHelper');
 
-  SlskdApiHelper({SlskdConfig? config}) 
+  SlskdApiHelper({SlskdConfig? config})
       : _config = config ?? SlskdConfig.defaultConfig,
         _api = SlskdApi.create(config: config);
 
   /// Get list of downloads, grouped by directory
   Future<List<SlskdDirectoryDownload>> getDirectoryDownloads() async {
     try {
+      _logger.info('Fetching downloads from slskd API');
       final response = await _api.getDownloads();
-      
+      _logger.info(
+          'Received downloads response: status=${response.statusCode}, body=${response.body}');
+      debugPrint(
+          '[SlskdApiHelper] Raw downloads response: status=${response.statusCode}, body=${response.body}');
       if (response.isSuccessful && response.body != null) {
-        final downloads = response.body!
-            .map((json) => SlskdDownload.fromJson(json))
-            .toList();
-
-        // Group downloads by directory
-        final Map<String, List<SlskdDownload>> groupedDownloads = {};
-        
-        for (final download in downloads) {
-          // Extract directory from filename
-          final directory = _extractDirectory(download.filename);
-          
-          if (!groupedDownloads.containsKey(directory)) {
-            groupedDownloads[directory] = [];
+        final List<SlskdDirectoryDownload> directoryDownloads = [];
+        for (final userObj in response.body as List<dynamic>) {
+          final username =
+              (userObj is Map<String, dynamic> && userObj['username'] != null)
+                  ? userObj['username'].toString()
+                  : '';
+          final directories = (userObj is Map<String, dynamic> &&
+                  userObj['directories'] is List)
+              ? userObj['directories'] as List<dynamic>
+              : [];
+          for (final dirObj in directories) {
+            final directoryName =
+                (dirObj is Map<String, dynamic> && dirObj['directory'] != null)
+                    ? dirObj['directory'].toString()
+                    : '';
+            final filesList =
+                (dirObj is Map<String, dynamic> && dirObj['files'] is List)
+                    ? dirObj['files'] as List<dynamic>
+                    : [];
+            final files = filesList
+                .map((fileJson) =>
+                    SlskdDownload.fromJson(fileJson as Map<String, dynamic>))
+                .toList();
+            final totalSize =
+                files.fold<int>(0, (sum, file) => sum + file.size);
+            final totalBytesTransferred =
+                files.fold<int>(0, (sum, file) => sum + file.bytesTransferred);
+            final overallProgress =
+                totalSize > 0 ? (totalBytesTransferred / totalSize) * 100 : 0.0;
+            String state = 'Completed';
+            if (files.any((f) => f.state == 'InProgress')) {
+              state = 'InProgress';
+            } else if (files.any((f) => f.state == 'Queued')) {
+              state = 'Queued';
+            }
+            final startedAt = files.isNotEmpty
+                ? files
+                    .map((f) => f.startedAt)
+                    .reduce((a, b) => a.isBefore(b) ? a : b)
+                : DateTime.now();
+            directoryDownloads.add(SlskdDirectoryDownload(
+              username: username,
+              directoryName: directoryName,
+              files: files,
+              startedAt: startedAt,
+              state: state,
+              totalSize: totalSize,
+              totalBytesTransferred: totalBytesTransferred,
+              overallProgress: overallProgress,
+            ));
           }
-          groupedDownloads[directory]!.add(download);
         }
-
-        // Convert to SlskdDirectoryDownload objects
-        final directoryDownloads = groupedDownloads.entries.map((entry) {
-          final files = entry.value;
-          final totalSize = files.fold<int>(0, (sum, file) => sum + file.size);
-          final totalBytesTransferred = files.fold<int>(0, (sum, file) => sum + file.bytesTransferred);
-          final overallProgress = totalSize > 0 ? (totalBytesTransferred / totalSize) * 100 : 0.0;
-          
-          // Determine overall state
-          String state = 'Completed';
-          if (files.any((f) => f.state == 'InProgress')) {
-            state = 'InProgress';
-          } else if (files.any((f) => f.state == 'Queued')) {
-            state = 'Queued';
-          }
-
-          return SlskdDirectoryDownload(
-            username: files.first.username,
-            directoryName: entry.key,
-            files: files,
-            startedAt: files.map((f) => f.startedAt).reduce((a, b) => a.isBefore(b) ? a : b),
-            state: state,
-            totalSize: totalSize,
-            totalBytesTransferred: totalBytesTransferred,
-            overallProgress: overallProgress,
-          );
-        }).toList();
-
         // Sort by start date descending
         directoryDownloads.sort((a, b) => b.startedAt.compareTo(a.startedAt));
-
         return directoryDownloads;
       }
-
       _logger.warning('Failed to get downloads: ${response.statusCode}');
+      debugPrint(
+          '[SlskdApiHelper] Failed to get downloads: status=${response.statusCode}, body=${response.body}');
       return [];
     } catch (e) {
       _logger.severe('Error getting downloads: $e');
+      debugPrint('[SlskdApiHelper] Exception getting downloads: $e');
       return [];
     }
   }
@@ -263,10 +287,10 @@ class SlskdApiHelper {
   Future<List<SlskdSearch>> getSearches({int? limit}) async {
     try {
       final response = await _api.getSearches(limit: limit ?? 50);
-      
+
       if (response.isSuccessful && response.body != null) {
-        final searches = response.body!
-            .map((json) => SlskdSearch.fromJson(json))
+        final searches = (response.body as List<dynamic>)
+            .map((json) => SlskdSearch.fromJson(json as Map<String, dynamic>))
             .toList();
 
         // Sort by search time descending
@@ -287,7 +311,7 @@ class SlskdApiHelper {
   Future<SlskdSearch?> getSearch(int id) async {
     try {
       final response = await _api.getSearch(id: id);
-      
+
       if (response.isSuccessful && response.body != null) {
         return SlskdSearch.fromJson(response.body!);
       }
@@ -307,7 +331,7 @@ class SlskdApiHelper {
         'username': _config.username,
         'password': _config.password,
       });
-      
+
       return response.isSuccessful;
     } catch (e) {
       _logger.severe('Error testing authentication: $e');

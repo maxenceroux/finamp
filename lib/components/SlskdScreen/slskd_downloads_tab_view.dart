@@ -30,9 +30,19 @@ class _SlskdDownloadsTabViewState extends State<SlskdDownloadsTabView> {
       setState(() {
         _isLoading = true;
       });
+      debugPrint('[SlskdDownloadsTabView] Loading downloads from slskd...');
 
       final downloads = await _slskdApi.getDirectoryDownloads();
-      
+      debugPrint(
+          '[SlskdDownloadsTabView] Downloads loaded: count=${downloads.length}');
+      if (downloads.isEmpty) {
+        debugPrint('[SlskdDownloadsTabView] No downloads found');
+      } else {
+        for (final d in downloads) {
+          debugPrint(
+              '[SlskdDownloadsTabView] Directory: \'${d.directoryName}\', files: ${d.files.length}, state: ${d.state}, progress: ${d.overallProgress.toStringAsFixed(1)}%');
+        }
+      }
       setState(() {
         _downloads = downloads;
         _isLoading = false;
@@ -41,6 +51,7 @@ class _SlskdDownloadsTabViewState extends State<SlskdDownloadsTabView> {
       setState(() {
         _isLoading = false;
       });
+      debugPrint('[SlskdDownloadsTabView] Error loading downloads: $e');
       if (mounted) {
         errorSnackbar(e, context);
       }
@@ -69,15 +80,15 @@ class _SlskdDownloadsTabViewState extends State<SlskdDownloadsTabView> {
             Text(
               'No downloads found',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
               'Downloads from slskd will appear here',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[500],
-              ),
+                    color: Colors.grey[500],
+                  ),
             ),
           ],
         ),

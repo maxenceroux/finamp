@@ -31,8 +31,44 @@ class SlskdDownload {
     required this.direction,
   });
 
-  factory SlskdDownload.fromJson(Map<String, dynamic> json) =>
-      _$SlskdDownloadFromJson(json);
+  factory SlskdDownload.fromJson(Map<String, dynamic> json) {
+    int parseInt(dynamic value) {
+      if (value is int) return value;
+      if (value is String) return int.tryParse(value) ?? 0;
+      if (value is double) return value.toInt();
+      return 0;
+    }
+
+    double parseDouble(dynamic value) {
+      if (value is double) return value;
+      if (value is int) return value.toDouble();
+      if (value is String) return double.tryParse(value) ?? 0.0;
+      return 0.0;
+    }
+
+    DateTime? parseDate(dynamic value) {
+      if (value is String && value.isNotEmpty) {
+        try {
+          return DateTime.parse(value);
+        } catch (_) {}
+      }
+      return null;
+    }
+
+    return SlskdDownload(
+      username: json['username']?.toString() ?? '',
+      token: json['token']?.toString() ?? '',
+      filename: json['filename']?.toString() ?? '',
+      size: parseInt(json['size']),
+      bytesTransferred: parseInt(json['bytesTransferred']),
+      percentComplete: parseDouble(json['percentComplete']),
+      averageSpeed: parseInt(json['averageSpeed']),
+      state: json['state']?.toString() ?? '',
+      startedAt: parseDate(json['requestedAt']) ?? DateTime.now(),
+      endedAt: parseDate(json['endedAt']),
+      direction: json['direction']?.toString() ?? '',
+    );
+  }
 
   Map<String, dynamic> toJson() => _$SlskdDownloadToJson(this);
 }
@@ -75,7 +111,8 @@ class SlskdDirectoryDownload {
   /// Get the average speed across all files
   double get averageSpeed {
     if (files.isEmpty) return 0.0;
-    return files.map((f) => f.averageSpeed).reduce((a, b) => a + b) / files.length;
+    return files.map((f) => f.averageSpeed).reduce((a, b) => a + b) /
+        files.length;
   }
 }
 
@@ -98,8 +135,35 @@ class SlskdSearch {
     this.results,
   });
 
-  factory SlskdSearch.fromJson(Map<String, dynamic> json) =>
-      _$SlskdSearchFromJson(json);
+  factory SlskdSearch.fromJson(Map<String, dynamic> json) {
+    int parseInt(dynamic value) {
+      if (value is int) return value;
+      if (value is String) return int.tryParse(value) ?? 0;
+      if (value is double) return value.toInt();
+      return 0;
+    }
+
+    DateTime? parseDate(dynamic value) {
+      if (value is String && value.isNotEmpty) {
+        try {
+          return DateTime.parse(value);
+        } catch (_) {}
+      }
+      return null;
+    }
+
+    // Map new API fields to model fields
+    return SlskdSearch(
+      id: json['id']?.toString().isNotEmpty == true ? parseInt(json['id']) : 0,
+      query: json['searchText']?.toString() ?? json['query']?.toString() ?? '',
+      searchedAt: parseDate(json['startedAt']) ?? DateTime.now(),
+      state: json['state']?.toString() ?? '',
+      resultCount: parseInt(json['responseCount'] ?? json['resultCount']),
+      results: (json['responses'] as List<dynamic>?)
+          ?.map((e) => SlskdSearchResult.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
 
   Map<String, dynamic> toJson() => _$SlskdSearchToJson(this);
 }

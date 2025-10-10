@@ -15,6 +15,9 @@ class SlskdSearchItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate locked file count
+    int lockedCount =
+        search.results?.where((r) => !r.hasFreeUploadSlot).length ?? 0;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4.0),
       child: InkWell(
@@ -31,13 +34,13 @@ class SlskdSearchItem extends StatelessWidget {
                     child: Text(
                       search.query,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  _buildStateChip(context),
+                  // State chip removed
                 ],
               ),
               const SizedBox(height: 8),
@@ -47,15 +50,30 @@ class SlskdSearchItem extends StatelessWidget {
                   Text(
                     '${search.resultCount} results',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                          color: Colors.grey[600],
+                        ),
                   ),
                   Text(
                     DateFormat('MMM dd, HH:mm').format(search.searchedAt),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                          color: Colors.grey[600],
+                        ),
                   ),
+                  if (lockedCount > 0)
+                    Row(
+                      children: [
+                        Icon(Icons.lock_outline,
+                            color: Colors.red[400], size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          '$lockedCount locked',
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.red[400],
+                                  ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ],
@@ -65,43 +83,5 @@ class SlskdSearchItem extends StatelessWidget {
     );
   }
 
-  Widget _buildStateChip(BuildContext context) {
-    Color chipColor;
-    IconData icon;
-
-    switch (search.state) {
-      case 'Completed':
-        chipColor = Colors.green;
-        icon = Icons.check_circle;
-        break;
-      case 'InProgress':
-        chipColor = Colors.blue;
-        icon = Icons.search;
-        break;
-      case 'Failed':
-        chipColor = Colors.red;
-        icon = Icons.error;
-        break;
-      default:
-        chipColor = Colors.grey;
-        icon = Icons.help_outline;
-    }
-
-    return Chip(
-      label: Text(
-        search.state,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-        ),
-      ),
-      backgroundColor: chipColor,
-      avatar: Icon(
-        icon,
-        color: Colors.white,
-        size: 16,
-      ),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    );
-  }
+  // State chip removed
 }

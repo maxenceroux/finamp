@@ -6,15 +6,16 @@ part of 'slskd_api.dart';
 // ChopperGenerator
 // **************************************************************************
 
-// ignore_for_file: always_put_control_body_on_new_line, always_specify_types, prefer_const_declarations, unnecessary_brace_in_string_interps
-class _$SlskdApi extends SlskdApi {
+// coverage:ignore-file
+// ignore_for_file: type=lint
+final class _$SlskdApi extends SlskdApi {
   _$SlskdApi([ChopperClient? client]) {
     if (client == null) return;
     this.client = client;
   }
 
   @override
-  final definitionType = SlskdApi;
+  final Type definitionType = SlskdApi;
 
   @override
   Future<Response<Map<String, dynamic>>> authenticate(
@@ -27,12 +28,15 @@ class _$SlskdApi extends SlskdApi {
       client.baseUrl,
       body: $body,
     );
-    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+      responseConverter: JsonConverter.responseFactory,
+    );
   }
 
   @override
-  Future<Response<List<Map<String, dynamic>>>> getDownloads(
-      {bool includeRemoved = false}) {
+  Future<Response<List<dynamic>>> getDownloads({bool includeRemoved = false}) {
     final Uri $url = Uri.parse('/api/v0/transfers/downloads');
     final Map<String, dynamic> $params = <String, dynamic>{
       'includeRemoved': includeRemoved
@@ -43,12 +47,15 @@ class _$SlskdApi extends SlskdApi {
       client.baseUrl,
       parameters: $params,
     );
-    return client.send<List<Map<String, dynamic>>, Map<String, dynamic>>(
-        $request);
+    return client.send<List<dynamic>, List<dynamic>>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+      responseConverter: JsonConverter.responseFactory,
+    );
   }
 
   @override
-  Future<Response<List<Map<String, dynamic>>>> getSearches({int? limit}) {
+  Future<Response<List<dynamic>>> getSearches({int? limit}) {
     final Uri $url = Uri.parse('/api/v0/searches');
     final Map<String, dynamic> $params = <String, dynamic>{'limit': limit};
     final Request $request = Request(
@@ -57,8 +64,11 @@ class _$SlskdApi extends SlskdApi {
       client.baseUrl,
       parameters: $params,
     );
-    return client.send<List<Map<String, dynamic>>, Map<String, dynamic>>(
-        $request);
+    return client.send<List<dynamic>, List<dynamic>>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+      responseConverter: JsonConverter.responseFactory,
+    );
   }
 
   @override
@@ -69,6 +79,10 @@ class _$SlskdApi extends SlskdApi {
       $url,
       client.baseUrl,
     );
-    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+      responseConverter: JsonConverter.responseFactory,
+    );
   }
 }

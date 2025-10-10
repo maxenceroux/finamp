@@ -106,7 +106,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
               TabContentType.playlists,
               TabContentType.genres,
               TabContentType.songs,
-              TabContentType.discover
+              TabContentType.discover,
+              TabContentType.slskdDownloads,
+              TabContentType.slskdSearches
             ]
           : (fields[22] as List).cast<TabContentType>(),
       hasCompletedBlurhashImageMigration:
@@ -455,6 +457,10 @@ class TabContentTypeAdapter extends TypeAdapter<TabContentType> {
         return TabContentType.songs;
       case 5:
         return TabContentType.discover;
+      case 6:
+        return TabContentType.slskdDownloads;
+      case 7:
+        return TabContentType.slskdSearches;
       default:
         return TabContentType.albums;
     }
@@ -480,6 +486,12 @@ class TabContentTypeAdapter extends TypeAdapter<TabContentType> {
         break;
       case TabContentType.discover:
         writer.writeByte(5);
+        break;
+      case TabContentType.slskdDownloads:
+        writer.writeByte(6);
+        break;
+      case TabContentType.slskdSearches:
+        writer.writeByte(7);
         break;
     }
   }

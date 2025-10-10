@@ -374,9 +374,11 @@ enum TabContentType {
       case TabContentType.discover:
         return AppLocalizations.of(context)!.discover;
       case TabContentType.slskdDownloads:
-        return AppLocalizations.of(context)!.slskdDownloads;
+        // Fallback to static string until generated
+        return "Downloads";
       case TabContentType.slskdSearches:
-        return AppLocalizations.of(context)!.slskdSearches;
+        // Fallback to static string until generated
+        return "Searches";
     }
   }
 }

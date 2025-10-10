@@ -52,6 +52,7 @@ class _SpotifyAlbumScreenContentState extends State<SpotifyAlbumScreenContent> {
               (BuildContext context, int index) {
                 return SpotifyTrackListTile(
                   item: widget.children[index],
+                  album: widget.parent,
                   onTap: () {
                     _showTrackInfo(context, widget.children[index]);
                   },

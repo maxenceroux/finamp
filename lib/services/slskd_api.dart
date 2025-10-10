@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -9,10 +10,135 @@ import '../models/slskd_models.dart';
 
 part 'slskd_api.chopper.dart';
 
+/// Configuration for slskd connection
+class SlskdConfig {
+  final String baseUrl;
+  final String username;
+  final String password;
+
+  const SlskdConfig({
+    required this.baseUrl,
+    required this.username,
+    required this.password,
+  });
+
+  static const SlskdConfig defaultConfig = SlskdConfig(
+    baseUrl: 'http://100.98.104.55:5030',
+    username: 'slskd',
+    password: 'slskd',
+  );
+}
+
+/// Authentication response model
+class SlskdAuthResponse {
+  final String token;
+  final String username;
+
+  SlskdAuthResponse({required this.token, required this.username});
+
+  factory SlskdAuthResponse.fromJson(Map<String, dynamic> json) {
+    return SlskdAuthResponse(
+      token: json['token'] as String,
+      username: json['username'] as String,
+    );
+  }
+}
+
+/// Authentication interceptor for slskd API
+class SlskdAuthInterceptor implements RequestInterceptor, ResponseInterceptor {
+  String? _token;
+  final SlskdConfig config;
+  final _logger = Logger('SlskdAuthInterceptor');
+  bool _isAuthenticating = false;
+
+  SlskdAuthInterceptor(this.config);
+
+  @override
+  FutureOr<Request> onRequest(Request request) async {
+    // Skip authentication for login endpoint
+    if (request.url.path.endsWith('/api/v0/session')) {
+      return request;
+    }
+
+    // Get token if we don't have one
+    if (_token == null && !_isAuthenticating) {
+      await _authenticate();
+    }
+
+    // Add bearer token to request
+    if (_token != null) {
+      return request.copyWith(headers: {
+        ...request.headers,
+        'Authorization': 'Bearer $_token',
+      });
+    }
+
+    return request;
+  }
+
+  @override
+  FutureOr<Response> onResponse(Response response) async {
+    // If we get a 401, clear token and retry once
+    if (response.statusCode == 401 && _token != null) {
+      _logger.info('Received 401, clearing token and will retry on next request');
+      clearToken();
+    }
+    return response;
+  }
+
+  Future<void> _authenticate() async {
+    if (_isAuthenticating) return;
+    
+    _isAuthenticating = true;
+    try {
+      final authClient = ChopperClient(
+        baseUrl: Uri.parse(config.baseUrl),
+        converter: const JsonConverter(),
+      );
+
+      final authRequest = Request(
+        'POST',
+        Uri.parse('/api/v0/session'),
+        authClient.baseUrl,
+        body: {
+          'username': config.username,
+          'password': config.password,
+        },
+      );
+
+      final response = await authClient.send(authRequest);
+      
+      if (response.isSuccessful && response.body != null) {
+        final authResponse = SlskdAuthResponse.fromJson(response.body);
+        _token = authResponse.token;
+        _logger.info('Successfully authenticated with slskd');
+      } else {
+        _logger.severe('Failed to authenticate with slskd: ${response.statusCode}');
+      }
+
+      authClient.dispose();
+    } catch (e) {
+      _logger.severe('Error during authentication: $e');
+    } finally {
+      _isAuthenticating = false;
+    }
+  }
+
+  void clearToken() {
+    _token = null;
+  }
+}
+
 @ChopperApi()
 abstract class SlskdApi extends ChopperService {
-  static const String baseUrl = 'http://localhost:5030'; // Default slskd URL
-  
+  @FactoryConverter(
+    request: JsonConverter.requestFactory,
+    response: JsonConverter.responseFactory,
+  )
+  @Post(path: '/api/v0/session')
+  Future<Response<Map<String, dynamic>>> authenticate({
+    @Body() required Map<String, String> credentials,
+  });
   @FactoryConverter(
     request: JsonConverter.requestFactory,
     response: JsonConverter.responseFactory,
@@ -40,11 +166,15 @@ abstract class SlskdApi extends ChopperService {
     @Path('id') required int id,
   });
 
-  static SlskdApi create({String? baseUrl}) {
+  static SlskdApi create({SlskdConfig? config}) {
+    final slskdConfig = config ?? SlskdConfig.defaultConfig;
+    final authInterceptor = SlskdAuthInterceptor(slskdConfig);
+    
     final client = ChopperClient(
-      baseUrl: Uri.parse(baseUrl ?? SlskdApi.baseUrl),
+      baseUrl: Uri.parse(slskdConfig.baseUrl),
       services: [_$SlskdApi()],
       interceptors: [
+        authInterceptor,
         HttpAggregateLoggingInterceptor(),
         HttpLoggingInterceptor(),
       ],
@@ -58,9 +188,12 @@ abstract class SlskdApi extends ChopperService {
 /// Helper class to manage slskd API integration
 class SlskdApiHelper {
   final SlskdApi _api;
+  final SlskdConfig _config;
   final _logger = Logger('SlskdApiHelper');
 
-  SlskdApiHelper({String? baseUrl}) : _api = SlskdApi.create(baseUrl: baseUrl);
+  SlskdApiHelper({SlskdConfig? config}) 
+      : _config = config ?? SlskdConfig.defaultConfig,
+        _api = SlskdApi.create(config: config);
 
   /// Get list of downloads, grouped by directory
   Future<List<SlskdDirectoryDownload>> getDirectoryDownloads() async {
@@ -164,6 +297,21 @@ class SlskdApiHelper {
     } catch (e) {
       _logger.severe('Error getting search $id: $e');
       return null;
+    }
+  }
+
+  /// Test authentication with slskd
+  Future<bool> testAuthentication() async {
+    try {
+      final response = await _api.authenticate(credentials: {
+        'username': _config.username,
+        'password': _config.password,
+      });
+      
+      return response.isSuccessful;
+    } catch (e) {
+      _logger.severe('Error testing authentication: $e');
+      return false;
     }
   }
 

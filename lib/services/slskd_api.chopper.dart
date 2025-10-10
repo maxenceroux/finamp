@@ -17,6 +17,20 @@ class _$SlskdApi extends SlskdApi {
   final definitionType = SlskdApi;
 
   @override
+  Future<Response<Map<String, dynamic>>> authenticate(
+      {required Map<String, String> credentials}) {
+    final Uri $url = Uri.parse('/api/v0/session');
+    final $body = credentials;
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+  }
+
+  @override
   Future<Response<List<Map<String, dynamic>>>> getDownloads(
       {bool includeRemoved = false}) {
     final Uri $url = Uri.parse('/api/v0/transfers/downloads');

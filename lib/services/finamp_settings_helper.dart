@@ -249,4 +249,25 @@ class FinampSettingsHelper {
     Hive.box<FinampSettings>("FinampSettings")
         .put("FinampSettings", finampSettingsTemp);
   }
+
+  static void setSlskdHost(String host) {
+    FinampSettings finampSettingsTemp = finampSettings;
+    finampSettingsTemp.slskdHost = host;
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setSlskdUsername(String username) {
+    FinampSettings finampSettingsTemp = finampSettings;
+    finampSettingsTemp.slskdUsername = username;
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setSlskdPassword(String password) {
+    FinampSettings finampSettingsTemp = finampSettings;
+    finampSettingsTemp.slskdPassword = password;
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
+  }
 }

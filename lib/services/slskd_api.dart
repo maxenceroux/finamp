@@ -7,6 +7,7 @@ import 'package:finamp/services/http_aggregate_logging_interceptor.dart';
 import 'package:logging/logging.dart';
 
 import '../models/slskd_models.dart';
+import '../services/finamp_settings_helper.dart';
 
 part 'slskd_api.chopper.dart';
 
@@ -22,11 +23,17 @@ class SlskdConfig {
     required this.password,
   });
 
-  static const SlskdConfig defaultConfig = SlskdConfig(
-    baseUrl: 'http://192.168.1.31:5030',
-    username: 'slskd',
-    password: 'slskd',
-  );
+  /// Get configuration from settings
+  static SlskdConfig fromSettings() {
+    final settings = FinampSettingsHelper.finampSettings;
+    return SlskdConfig(
+      baseUrl: settings.slskdHost.isEmpty ? 'http://localhost:5030' : settings.slskdHost,
+      username: settings.slskdUsername,
+      password: settings.slskdPassword,
+    );
+  }
+
+  bool get isConfigured => baseUrl.isNotEmpty && username.isNotEmpty && password.isNotEmpty;
 }
 
 /// Authentication response model
@@ -178,7 +185,7 @@ abstract class SlskdApi extends ChopperService {
   });
 
   static SlskdApi create({SlskdConfig? config}) {
-    final slskdConfig = config ?? SlskdConfig.defaultConfig;
+    final slskdConfig = config ?? SlskdConfig.fromSettings();
     final authInterceptor = SlskdAuthInterceptor(slskdConfig);
 
     final client = ChopperClient(
@@ -203,7 +210,7 @@ class SlskdApiHelper {
   final _logger = Logger('SlskdApiHelper');
 
   SlskdApiHelper({SlskdConfig? config})
-      : _config = config ?? SlskdConfig.defaultConfig,
+      : _config = config ?? SlskdConfig.fromSettings(),
         _api = SlskdApi.create(config: config);
 
   /// Get list of downloads, grouped by directory

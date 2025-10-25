@@ -193,6 +193,15 @@ class FinampSettings {
   @HiveField(27, defaultValue: false)
   bool hasCompletedDiscoverTabMigration;
 
+  @HiveField(28, defaultValue: '')
+  String slskdHost;
+
+  @HiveField(29, defaultValue: '')
+  String slskdUsername;
+
+  @HiveField(30, defaultValue: '')
+  String slskdPassword;
+
   static Future<FinampSettings> create() async {
     final internalSongDir = await getInternalSongDir();
     final downloadLocation = DownloadLocation.create(

@@ -6,12 +6,12 @@ const jellyfinPurpleColor = Color(0xFFAA5CC3);
 const lightColorScheme = ColorScheme(
   brightness: Brightness.light,
   // Primary
-  primary: Color(0xFF00668A),
+  primary: Color(0xFF6867AF),
   onPrimary: Color(0xFFFFFFFF),
   primaryContainer: Color(0xFFC4E8FF),
   onPrimaryContainer: Color(0xFF001E2C),
   // Secondary
-  secondary: Color(0xFF406374),
+  secondary: Color.fromARGB(255, 134, 133, 202),
   onSecondary: Color(0xFFFFFFFF),
   secondaryContainer: Color(0xFFCCE8F8),
   onSecondaryContainer: Color(0xFF1B333F),
@@ -33,12 +33,12 @@ const lightColorScheme = ColorScheme(
   surfaceVariant: Color(0xFFDDE4E8),
   onSurfaceVariant: Color(0xFF41484D),
   // Other colors
-  outline: Color(0xFF727A7F),
+  outline: Color(0xFF6867AF),
   onInverseSurface: Color(0xFFF0F1F3),
   inverseSurface: Color(0xFF2E3133),
   inversePrimary: Color(0xFF7BD0FF),
   shadow: Color(0xFF000000),
-  surfaceTint: Color(0xFF00668A),
+  surfaceTint: Color(0xFF6867AF),
   outlineVariant: Color(0xFFC0C7CD),
   scrim: Color(0xFF000000),
 );
@@ -46,12 +46,12 @@ const lightColorScheme = ColorScheme(
 const darkColorScheme = ColorScheme(
   brightness: Brightness.dark,
   // Primary
-  primary: jellyfinBlueColor,
+  primary: Color(0xFF6867AF),
   onPrimary: Color(0xFF001E2C),
-  primaryContainer: Color(0xFF004C68),
+  primaryContainer: Color(0xFF6867AF),
   onPrimaryContainer: Color(0xFFC3E7FF),
   // Secondary
-  secondary: Color(0xFF60B4DD),
+  secondary: Color.fromARGB(255, 134, 133, 202),
   onSecondary: Color(0xFF112732),
   secondaryContainer: Color(0xFF206B8C),
   onSecondaryContainer: Color(0xFFCEEEFF),
@@ -73,12 +73,12 @@ const darkColorScheme = ColorScheme(
   surfaceVariant: Color(0xFF333A3E),
   onSurfaceVariant: Color(0xFFC0C7CD),
   // Other colors
-  outline: Color(0xFF80878C),
+  outline: Color(0xFF6867AF),
   onInverseSurface: Color(0xFF191C1E),
   inverseSurface: Color(0xFFE1E2E5),
-  inversePrimary: Color(0xFF00668A),
+  inversePrimary: Color(0xFF6867AF),
   shadow: Color(0xFF000000),
-  surfaceTint: Color(0xFF7BD0FF),
+  surfaceTint: Color(0xFF6867AF),
   outlineVariant: Color(0xFF41484D),
   scrim: Color(0xFF000000),
 );

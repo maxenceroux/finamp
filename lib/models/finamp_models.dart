@@ -92,6 +92,9 @@ class FinampSettings {
     this.hasCompletedBlurhashImageMigrationIdFix = true,
     this.swipeInsertQueueNext = _swipeInsertQueueNext,
     this.hasCompletedDiscoverTabMigration = false,
+    this.slskdHost = '',
+    this.slskdUsername = '',
+    this.slskdPassword = '',
   });
 
   @HiveField(0)

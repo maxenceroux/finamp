@@ -121,6 +121,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       slskdHost: fields[28] == null ? '' : fields[28] as String,
       slskdUsername: fields[29] == null ? '' : fields[29] as String,
       slskdPassword: fields[30] == null ? '' : fields[30] as String,
+      noiseportServerIp: fields[31] == null ? '' : fields[31] as String,
     )
       ..disableGesture = fields[19] == null ? false : fields[19] as bool
       ..showFastScroller = fields[25] == null ? true : fields[25] as bool;
@@ -129,7 +130,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(31)
+      ..writeByte(32)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -191,7 +192,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(29)
       ..write(obj.slskdUsername)
       ..writeByte(30)
-      ..write(obj.slskdPassword);
+      ..write(obj.slskdPassword)
+      ..writeByte(31)
+      ..write(obj.noiseportServerIp);
   }
 
   @override

@@ -202,6 +202,9 @@ class FinampSettings {
   @HiveField(30, defaultValue: '')
   String slskdPassword;
 
+  @HiveField(31, defaultValue: '')
+  String noiseportServerIp;
+
   static Future<FinampSettings> create() async {
     final internalSongDir = await getInternalSongDir();
     final downloadLocation = DownloadLocation.create(

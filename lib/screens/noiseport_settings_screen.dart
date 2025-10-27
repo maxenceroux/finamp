@@ -40,6 +40,7 @@ class _NoiseportSettingsScreenState extends State<NoiseportSettingsScreen> {
       _testSuccess = null;
     });
 
+    ChopperClient? healthClient;
     try {
       final serverIp = _serverIpController.text.trim();
       
@@ -53,7 +54,7 @@ class _NoiseportSettingsScreenState extends State<NoiseportSettingsScreen> {
       }
 
       // Create Chopper client for the health check
-      final healthClient = ChopperClient(
+      healthClient = ChopperClient(
         baseUrl: Uri.parse('http://$serverIp:8010'),
       );
 
@@ -99,6 +100,7 @@ class _NoiseportSettingsScreenState extends State<NoiseportSettingsScreen> {
         errorSnackbar(e, context);
       }
     } finally {
+      healthClient?.dispose();
       if (mounted) {
         setState(() {
           _isTesting = false;

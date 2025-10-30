@@ -11,6 +11,7 @@ import 'downloads_settings_screen.dart';
 import 'audio_service_settings_screen.dart';
 import 'layout_settings_screen.dart';
 import 'slskd_settings_screen.dart';
+import 'noiseport_settings_screen.dart';
 import '../components/SettingsScreen/logout_list_tile.dart';
 import 'view_selector.dart';
 import 'language_selection_screen.dart';
@@ -82,6 +83,12 @@ class SettingsScreen extends StatelessWidget {
               title: Text(AppLocalizations.of(context)!.slskdSettings),
               onTap: () => Navigator.of(context)
                   .pushNamed(SlskdSettingsScreen.routeName),
+            ),
+            ListTile(
+              leading: const Icon(Icons.router),
+              title: const Text('Noiseport Server'),
+              onTap: () => Navigator.of(context)
+                  .pushNamed(NoiseportSettingsScreen.routeName),
             ),
             ListTile(
               leading: const Icon(Icons.library_music),

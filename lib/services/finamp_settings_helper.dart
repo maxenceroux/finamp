@@ -270,4 +270,11 @@ class FinampSettingsHelper {
     Hive.box<FinampSettings>("FinampSettings")
         .put("FinampSettings", finampSettingsTemp);
   }
+
+  static void setNoiseportServerIp(String serverIp) {
+    FinampSettings finampSettingsTemp = finampSettings;
+    finampSettingsTemp.noiseportServerIp = serverIp;
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
+  }
 }

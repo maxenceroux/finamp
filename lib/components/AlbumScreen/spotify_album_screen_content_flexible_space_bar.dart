@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 
 import '../../models/jellyfin_models.dart';
+import '../../services/finamp_settings_helper.dart';
 import '../album_image.dart';
 import 'item_info.dart';
 
@@ -79,6 +80,14 @@ class SpotifyAlbumScreenContentFlexibleSpaceBar extends StatelessWidget {
 
   void _showDownloadDialog(BuildContext context) async {
     try {
+      final serverIp = FinampSettingsHelper.finampSettings.noiseportServerIp;
+      
+      if (serverIp.isEmpty) {
+        _showErrorDialog(context, 
+          "Noiseport server IP not configured. Please set it in Settings > Noiseport Server.");
+        return;
+      }
+
       // Extract album name and artists
       final albumName = album.name ?? "Unknown Album";
       final artistNames = album.albumArtists?.map((artist) => artist.name).join(', ') ?? 
@@ -105,7 +114,7 @@ class SpotifyAlbumScreenContentFlexibleSpaceBar extends StatelessWidget {
 
       // Create Chopper client for the download API
       final downloadClient = ChopperClient(
-        baseUrl: Uri.parse('http://100.98.104.55:8000'),
+        baseUrl: Uri.parse('http://$serverIp:8000'),
         converter: JsonConverter(),
       );
 

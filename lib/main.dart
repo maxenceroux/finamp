@@ -38,6 +38,8 @@ import 'screens/logs_screen.dart';
 import 'screens/music_screen.dart';
 import 'screens/player_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/slskd_settings_screen.dart';
+import 'screens/noiseport_settings_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/spotify_album_screen.dart';
 import 'screens/tabs_settings_screen.dart';
@@ -130,6 +132,23 @@ Future<void> _setupDownloadsHelper() async {
     // Add discover tab to tabOrder if it's not present
     if (!currentSettings.tabOrder.contains(TabContentType.discover)) {
       currentSettings.tabOrder.add(TabContentType.discover);
+    }
+
+    // Add slskd tabs as well (but disabled by default)
+    if (!currentSettings.showTabs.containsKey(TabContentType.slskdDownloads)) {
+      currentSettings.showTabs[TabContentType.slskdDownloads] = false;
+    }
+    
+    if (!currentSettings.showTabs.containsKey(TabContentType.slskdSearches)) {
+      currentSettings.showTabs[TabContentType.slskdSearches] = false;
+    }
+    
+    if (!currentSettings.tabOrder.contains(TabContentType.slskdDownloads)) {
+      currentSettings.tabOrder.add(TabContentType.slskdDownloads);
+    }
+    
+    if (!currentSettings.tabOrder.contains(TabContentType.slskdSearches)) {
+      currentSettings.tabOrder.add(TabContentType.slskdSearches);
     }
     
     FinampSettingsHelper.setHasCompletedDiscoverTabMigration(true);
@@ -345,6 +364,10 @@ class Finamp extends StatelessWidget {
                           const TranscodingSettingsScreen(),
                       DownloadsSettingsScreen.routeName: (context) =>
                           const DownloadsSettingsScreen(),
+                      SlskdSettingsScreen.routeName: (context) =>
+                          const SlskdSettingsScreen(),
+                      NoiseportSettingsScreen.routeName: (context) =>
+                          const NoiseportSettingsScreen(),
                       AddDownloadLocationScreen.routeName: (context) =>
                           const AddDownloadLocationScreen(),
                       AudioServiceSettingsScreen.routeName: (context) =>

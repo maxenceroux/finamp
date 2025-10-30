@@ -97,7 +97,7 @@ flutter:
   generate: true
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/finamp.png
+    - images/noiseport.png
   #   - images/a_dot_ham.jpeg
   
 
@@ -127,7 +127,7 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/icon/icon_combined.png"

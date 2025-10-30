@@ -57,6 +57,10 @@
   "@playlists": {},
   "discover": "Discover",
   "@discover": {},
+  "slskdDownloads": "Downloads",
+  "@slskdDownloads": {},
+  "slskdSearches": "Searches",
+  "@slskdSearches": {},
   "startMix": "Start Mix",
   "@startMix": {},
   "startMixNoSongsArtist": "Long-press an artist to add or remove it from the mix builder before starting a mix",
@@ -585,5 +589,13 @@
   "sync": "Synchronize with Server",
   "@sync": {},
   "about": "About Finamp",
-  "@about": {}
+  "@about": {},
+  "connectionSuccessful": "Connection successful",
+  "@connectionSuccessful": {},
+  "connectionFailed": "Connection failed",
+  "@connectionFailed": {},
+  "settingsSaved": "Settings saved",
+  "@settingsSaved": {},
+  "slskdSettings": "slskd Settings",
+  "@slskdSettings": {}
 }

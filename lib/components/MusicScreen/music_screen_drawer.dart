@@ -31,7 +31,7 @@ class MusicScreenDrawer extends StatelessWidget {
                         child: CircleAvatar(
                           backgroundColor: Colors.transparent,
                           backgroundImage: AssetImage(
-                            'images/finamp.png',
+                            'images/noiseport.png',
                           ),
                           radius: 50.0,
                         ),

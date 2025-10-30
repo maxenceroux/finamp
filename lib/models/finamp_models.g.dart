@@ -106,7 +106,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
               TabContentType.playlists,
               TabContentType.genres,
               TabContentType.songs,
-              TabContentType.discover
+              TabContentType.discover,
+              TabContentType.slskdDownloads,
+              TabContentType.slskdSearches
             ]
           : (fields[22] as List).cast<TabContentType>(),
       hasCompletedBlurhashImageMigration:
@@ -116,6 +118,10 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       swipeInsertQueueNext: fields[26] == null ? false : fields[26] as bool,
       hasCompletedDiscoverTabMigration:
           fields[27] == null ? false : fields[27] as bool,
+      slskdHost: fields[28] == null ? '' : fields[28] as String,
+      slskdUsername: fields[29] == null ? '' : fields[29] as String,
+      slskdPassword: fields[30] == null ? '' : fields[30] as String,
+      noiseportServerIp: fields[31] == null ? '' : fields[31] as String,
     )
       ..disableGesture = fields[19] == null ? false : fields[19] as bool
       ..showFastScroller = fields[25] == null ? true : fields[25] as bool;
@@ -124,7 +130,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(28)
+      ..writeByte(32)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -180,7 +186,15 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(26)
       ..write(obj.swipeInsertQueueNext)
       ..writeByte(27)
-      ..write(obj.hasCompletedDiscoverTabMigration);
+      ..write(obj.hasCompletedDiscoverTabMigration)
+      ..writeByte(28)
+      ..write(obj.slskdHost)
+      ..writeByte(29)
+      ..write(obj.slskdUsername)
+      ..writeByte(30)
+      ..write(obj.slskdPassword)
+      ..writeByte(31)
+      ..write(obj.noiseportServerIp);
   }
 
   @override
@@ -455,6 +469,10 @@ class TabContentTypeAdapter extends TypeAdapter<TabContentType> {
         return TabContentType.songs;
       case 5:
         return TabContentType.discover;
+      case 6:
+        return TabContentType.slskdDownloads;
+      case 7:
+        return TabContentType.slskdSearches;
       default:
         return TabContentType.albums;
     }
@@ -480,6 +498,12 @@ class TabContentTypeAdapter extends TypeAdapter<TabContentType> {
         break;
       case TabContentType.discover:
         writer.writeByte(5);
+        break;
+      case TabContentType.slskdDownloads:
+        writer.writeByte(6);
+        break;
+      case TabContentType.slskdSearches:
+        writer.writeByte(7);
         break;
     }
   }

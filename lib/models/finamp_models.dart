@@ -92,6 +92,10 @@ class FinampSettings {
     this.hasCompletedBlurhashImageMigrationIdFix = true,
     this.swipeInsertQueueNext = _swipeInsertQueueNext,
     this.hasCompletedDiscoverTabMigration = false,
+    this.slskdHost = '',
+    this.slskdUsername = '',
+    this.slskdPassword = '',
+    this.noiseportServerIp = '',
   });
 
   @HiveField(0)
@@ -192,6 +196,18 @@ class FinampSettings {
 
   @HiveField(27, defaultValue: false)
   bool hasCompletedDiscoverTabMigration;
+
+  @HiveField(28, defaultValue: '')
+  String slskdHost;
+
+  @HiveField(29, defaultValue: '')
+  String slskdUsername;
+
+  @HiveField(30, defaultValue: '')
+  String slskdPassword;
+
+  @HiveField(31, defaultValue: '')
+  String noiseportServerIp = '';
 
   static Future<FinampSettings> create() async {
     final internalSongDir = await getInternalSongDir();
@@ -321,7 +337,11 @@ enum TabContentType {
   @HiveField(4)
   songs,
   @HiveField(5)
-  discover;
+  discover,
+  @HiveField(6)
+  slskdDownloads,
+  @HiveField(7)
+  slskdSearches;
 
   /// Human-readable version of the [TabContentType]. For example, toString() on
   /// [TabContentType.songs], toString() would return "TabContentType.songs".
@@ -347,6 +367,10 @@ enum TabContentType {
         return "Playlists";
       case TabContentType.discover:
         return "Discover";
+      case TabContentType.slskdDownloads:
+        return "Downloads";
+      case TabContentType.slskdSearches:
+        return "Searches";
     }
   }
 
@@ -365,6 +389,12 @@ enum TabContentType {
         return AppLocalizations.of(context)!.playlists;
       case TabContentType.discover:
         return AppLocalizations.of(context)!.discover;
+      case TabContentType.slskdDownloads:
+        // Fallback to static string until generated
+        return "Downloads";
+      case TabContentType.slskdSearches:
+        // Fallback to static string until generated
+        return "Searches";
     }
   }
 }

@@ -11,11 +11,11 @@
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>NSAppleMusicUsageDescription</key>
-	<string>Finamp can use your media library to store downloaded songs. If you don&apos;t want this, Finamp can also download songs to the app&apos;s internal directory, which doesn&apos;t use any permissions.</string>
+	<string>NoisePort can use your media library to store downloaded songs. If you don&apos;t want this, NoisePort can also download songs to the app&apos;s internal directory, which doesn&apos;t use any permissions.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Finamp</string>
+	<string>NoisePort</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -23,7 +23,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>finamp</string>
+	<string>NoisePort</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -68,7 +68,7 @@
 	<true/>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<!-- Enable viewing Finamp downloads on iOS -->
+	<!-- Enable viewing NoisePort downloads on iOS -->
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>

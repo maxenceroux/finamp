@@ -28,11 +28,11 @@ if (keystorePropertiesFile.exists()) {
    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 android {
-    namespace "com.unicornsonlsd.finamp"
+    namespace "com.rax.noiseport"
     compileSdkVersion 34
 
     defaultConfig {
-        applicationId "com.unicornsonlsd.finamp"
+        applicationId "com.rax.noiseport"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
